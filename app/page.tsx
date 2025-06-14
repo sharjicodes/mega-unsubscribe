@@ -1,10 +1,24 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Mail, LogOut } from 'lucide-react';
+
+declare global {
+  interface Window {
+    google: {
+      accounts: {
+        id: {
+          initialize: (config: { client_id: string; callback: (response: any) => void; scope?: string }) => void;
+          renderButton: (element: HTMLElement, config: any) => void;
+          prompt: () => void;
+        };
+      };
+    };
+  }
+}
 
 // Gmail API scopes
 const SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
@@ -13,120 +27,175 @@ const SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
 export default function Home() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [emails, setEmails] = useState<any[]>([]);
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [showAllEmails, setShowAllEmails] = useState(true);
 
   useEffect(() => {
-    // Load Google API script
-    const loadGoogleScript = () => {
-      return new Promise<void>((resolve, reject) => {
-        if (document.querySelector('script[src="https://accounts.google.com/gsi/client"]')) {
-          resolve();
-          return;
-        }
+    console.log('Session Status:', status);
+    console.log('Session Data:', session);
+  }, [session, status]);
 
-        const script = document.createElement('script');
-        script.src = 'https://accounts.google.com/gsi/client';
-        script.async = true;
-        script.defer = true;
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error('Failed to load Google API script'));
-        document.head.appendChild(script);
-      });
-    };
-
-    const initializeGoogleAuth = async () => {
-      try {
-        console.log('Starting Google Auth initialization...');
-        await loadGoogleScript();
-
-        if (!GOOGLE_CLIENT_ID) {
-          throw new Error('Google Client ID is not configured');
-        }
-
-        // Initialize OAuth2 token client
-        const tokenClient = window.google.accounts.oauth2.initTokenClient({
-          client_id: GOOGLE_CLIENT_ID,
-          scope: SCOPES,
-          callback: (response) => {
-            if (response.access_token) {
-              console.log('Access token received successfully');
-              setAccessToken(response.access_token);
-              setIsSignedIn(true);
-              fetchEmails(response.access_token);
-            }
-          },
-          error_callback: (error) => {
-            console.error('OAuth2 error:', error);
-            setError(`Authentication error: ${error.message}`);
-          }
-        });
-
-        // Store tokenClient in window for button click handler
-        (window as any).tokenClient = tokenClient;
-        console.log('Google OAuth2 initialized successfully');
-      } catch (error) {
-        console.error('Error initializing Google Auth:', error);
-        setError('Failed to initialize Google Auth');
-      }
-    };
-
-    initializeGoogleAuth();
-  }, []);
-
-  const handleSignIn = () => {
-    try {
-      if (!(window as any).tokenClient) {
-        throw new Error('Token client not initialized');
-      }
-      (window as any).tokenClient.requestAccessToken();
-    } catch (error) {
-      console.error('Error requesting access token:', error);
-      setError('Failed to sign in with Google');
-    }
-  };
-
-  const fetchEmails = async (token?: string) => {
+  const handleSignIn = async () => {
     try {
       setIsLoading(true);
       setError(null);
-
-      const currentToken = token || accessToken;
-      if (!currentToken) {
-        throw new Error('No access token available');
-      }
-
-      console.log('Fetching emails with token:', currentToken.substring(0, 20) + '...');
-      
-      const response = await fetch(
-        'https://gmail.googleapis.com/gmail/v1/users/me/messages?q=has:user -category:promotions -category:social&maxResults=50',
-        {
-          headers: {
-            Authorization: `Bearer ${currentToken}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Gmail API error:', errorData);
-        throw new Error(`Failed to fetch emails: ${errorData.error?.message || 'Unknown error'}`);
-      }
-
-      const data = await response.json();
-      console.log('Emails fetched successfully:', data);
-      setEmails(data.messages || []);
-    } catch (error) {
-      console.error('Error fetching emails:', error);
-      setError(error instanceof Error ? error.message : 'Failed to fetch emails');
+      const result = await signIn('google', { 
+        callbackUrl: '/',
+        scope: 'openid email profile https://www.googleapis.com/auth/gmail.readonly',
+        redirect: true
+      });
+      console.log('Sign In Result:', result);
+    } catch (err) {
+      console.error('Error signing in:', err);
+      setError(err instanceof Error ? err.message : 'Failed to sign in');
     } finally {
       setIsLoading(false);
     }
   };
+
+  const fetchEmails = async () => {
+    if (!session?.accessToken) {
+      console.error('No access token available in session:', session);
+      setError('No access token available');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+      console.log('Starting to fetch emails...');
+      console.log('Using access token:', session.accessToken.substring(0, 20) + '...');
+
+      // First, get the list of messages
+      const messagesUrl = 'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50';
+      console.log('Fetching messages from:', messagesUrl);
+      
+      const messagesResponse = await fetch(messagesUrl, {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      });
+
+      if (!messagesResponse.ok) {
+        const errorData = await messagesResponse.json();
+        console.error('Gmail API error response:', errorData);
+        throw new Error(`Gmail API error: ${errorData.error?.message || 'Unknown error'}`);
+      }
+
+      const messagesData = await messagesResponse.json();
+      console.log('Gmail API messages response:', messagesData);
+
+      if (!messagesData.messages || messagesData.messages.length === 0) {
+        console.log('No messages found in the response');
+        setEmails([]);
+        return;
+      }
+
+      console.log(`Found ${messagesData.messages.length} messages`);
+
+      // Then, get the full details of each message
+      const emailDetails = await Promise.all(
+        messagesData.messages.map(async (message: any) => {
+          const detailUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${message.id}`;
+          console.log('Fetching details for message:', message.id);
+          
+          const detailResponse = await fetch(detailUrl, {
+            headers: {
+              Authorization: `Bearer ${session.accessToken}`,
+            },
+          });
+
+          if (!detailResponse.ok) {
+            console.error(`Failed to fetch details for message ${message.id}:`, await detailResponse.text());
+            return null;
+          }
+
+          const emailData = await detailResponse.json();
+          console.log('Successfully fetched details for message:', message.id);
+          return emailData;
+        })
+      );
+
+      // Filter out any failed requests and extract unsubscribe links
+      const processedEmails = emailDetails
+        .filter(Boolean)
+        .map(email => {
+          const headers = email.payload.headers;
+          const subject = headers.find((h: any) => h.name === 'Subject')?.value || 'No Subject';
+          const from = headers.find((h: any) => h.name === 'From')?.value || 'Unknown Sender';
+          
+          // Look for List-Unsubscribe header
+          const unsubscribeHeader = headers.find((h: any) => 
+            h.name.toLowerCase() === 'list-unsubscribe' || 
+            h.name.toLowerCase() === 'list-unsubscribe-post'
+          );
+          
+          // Parse the unsubscribe link
+          let unsubscribeLink = null;
+          if (unsubscribeHeader?.value) {
+            console.log('Found unsubscribe header:', unsubscribeHeader.value);
+            // The value might be in format: <mailto:unsubscribe@example.com>, <https://example.com/unsubscribe>
+            const matches = unsubscribeHeader.value.match(/<(https?:\/\/[^>]+)>/);
+            if (matches) {
+              unsubscribeLink = matches[1];
+              console.log('Extracted unsubscribe link:', unsubscribeLink);
+            } else {
+              // If no URL found, use the raw value
+              unsubscribeLink = unsubscribeHeader.value;
+              console.log('Using raw unsubscribe value:', unsubscribeLink);
+            }
+          }
+
+          // Also check the email body for unsubscribe links
+          let bodyUnsubscribeLink = null;
+          if (email.payload.parts) {
+            const textPart = email.payload.parts.find((part: any) => part.mimeType === 'text/plain');
+            if (textPart?.data) {
+              const decodedBody = atob(textPart.data.replace(/-/g, '+').replace(/_/g, '/'));
+              const unsubscribeMatch = decodedBody.match(/https?:\/\/[^\s<>"]+unsubscribe[^\s<>"]+/i);
+              if (unsubscribeMatch) {
+                bodyUnsubscribeLink = unsubscribeMatch[0];
+                console.log('Found unsubscribe link in body:', bodyUnsubscribeLink);
+              }
+            }
+          }
+
+          return {
+            id: email.id,
+            subject,
+            from,
+            unsubscribeLink: unsubscribeLink || bodyUnsubscribeLink,
+            snippet: email.snippet,
+            date: headers.find((h: any) => h.name === 'Date')?.value || 'Unknown Date',
+            hasUnsubscribeLink: !!(unsubscribeLink || bodyUnsubscribeLink)
+          };
+        });
+
+      console.log('All processed emails:', processedEmails);
+      setEmails(processedEmails);
+    } catch (err) {
+      console.error('Error fetching emails:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch emails');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (status === 'authenticated' && session?.accessToken) {
+      console.log('Session authenticated, fetching emails...');
+      fetchEmails();
+    }
+  }, [status, session]);
+
+  if (status === 'loading') {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+
+  const filteredEmails = showAllEmails ? emails : emails.filter(email => email.hasUnsubscribeLink);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
@@ -140,65 +209,78 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm">
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                 {error}
               </div>
             )}
             
-            {!isSignedIn ? (
-              <div className="flex flex-col items-center gap-4">
+            {status !== 'authenticated' ? (
+              <div className="space-y-4">
+                <p>Please sign in to access your Gmail account.</p>
                 <Button
                   onClick={handleSignIn}
-                  className="w-full max-w-xs flex items-center justify-center gap-2"
                   disabled={isLoading}
+                  className="w-full sm:w-auto"
                 >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Mail className="h-4 w-4" />
-                  )}
-                  Sign in with Google
+                  {isLoading ? 'Signing in...' : 'Sign in with Google'}
                 </Button>
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-lg font-semibold">Your Emails</h2>
+                <div className="flex items-center justify-between">
+                  <p>Signed in as {session.user?.email}</p>
                   <Button
+                    onClick={() => signOut()}
                     variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setIsSignedIn(false);
-                      setAccessToken(null);
-                      setEmails([]);
-                    }}
+                    disabled={isLoading}
                   >
-                    <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
                   </Button>
                 </div>
                 
                 {isLoading ? (
-                  <div className="flex justify-center py-8">
-                    <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
-                  </div>
-                ) : emails.length > 0 ? (
-                  <div className="space-y-2">
-                    {emails.map((email) => (
-                      <div
-                        key={email.id}
-                        className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                      >
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                          {email.snippet}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
+                  <p>Loading...</p>
                 ) : (
-                  <p className="text-center text-gray-500 dark:text-gray-400">
-                    No emails found
-                  </p>
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-semibold">
+                        {showAllEmails ? 'All Emails' : 'Emails with Unsubscribe Links'}
+                      </h2>
+                      <Button
+                        onClick={() => setShowAllEmails(!showAllEmails)}
+                        variant="outline"
+                        size="sm"
+                      >
+                        {showAllEmails ? 'Show Only Unsubscribe Links' : 'Show All Emails'}
+                      </Button>
+                    </div>
+                    {filteredEmails.length > 0 ? (
+                      <ul className="space-y-4">
+                        {filteredEmails.map((email) => (
+                          <li key={email.id} className="p-4 border rounded-lg shadow-sm">
+                            <div className="font-medium">{email.subject}</div>
+                            <div className="text-sm text-gray-600 mb-2">{email.from}</div>
+                            <div className="text-sm text-gray-500 mb-2">{email.snippet}</div>
+                            <div className="text-sm text-gray-400 mb-2">{email.date}</div>
+                            {email.unsubscribeLink ? (
+                              <a
+                                href={email.unsubscribeLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 text-sm"
+                              >
+                                Unsubscribe
+                              </a>
+                            ) : (
+                              <div className="text-sm text-gray-500">No unsubscribe link found</div>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>No emails found.</p>
+                    )}
+                  </div>
                 )}
               </div>
             )}
