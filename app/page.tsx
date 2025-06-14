@@ -1,432 +1,210 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { EnvelopeIcon } from '@heroicons/react/24/outline';
+import { useEffect, useState } from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, Mail, LogOut } from 'lucide-react';
 
-interface EmailSubscription {
-  id: string;
-  from: string;
-  subject: string;
-  unsubscribeLink: string;
-}
-
-const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-
-// Enhanced debug logging
-console.log('Application Initialization:');
-console.log('------------------------');
-console.log('Environment Variables:');
-console.log('- NEXT_PUBLIC_GOOGLE_CLIENT_ID:', GOOGLE_CLIENT_ID);
-console.log('- Client ID Status:', GOOGLE_CLIENT_ID ? 'Present' : 'Missing');
-console.log('- Client ID Format:', GOOGLE_CLIENT_ID?.includes('.apps.googleusercontent.com') ? 'Valid' : 'Invalid');
-console.log('------------------------');
-
+// Gmail API scopes
 const SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
 
-declare global {
-  interface Window {
-    google: {
-      accounts: {
-        id: {
-          initialize: (config: {
-            client_id: string;
-            callback: (response: { credential: string }) => void;
-          }) => void;
-          renderButton: (
-            element: HTMLElement,
-            config: {
-              type: string;
-              theme: string;
-              size: string;
-              text: string;
-              shape: string;
-              logo_alignment: string;
-              width: number;
-            }
-          ) => void;
-          prompt: () => void;
-        };
-      };
-    };
-    gapi: {
-      client: {
-        init: (config: {
-          apiKey?: string;
-          clientId: string;
-          discoveryDocs: string[];
-          scope: string;
-        }) => Promise<void>;
-        gmail: {
-          users: {
-            messages: {
-              list: (params: { userId: string; q: string; maxResults: number }) => Promise<{
-                result: {
-                  messages: Array<{ id: string }>;
-                };
-              }>;
-              get: (params: { userId: string; id: string }) => Promise<{
-                result: {
-                  payload: {
-                    headers: Array<{ name: string; value: string }>;
-                  };
-                };
-              }>;
-            };
-          };
-        };
-      };
-    };
-  }
-}
+// Google Client ID from environment variable
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
 export default function Home() {
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [emails, setEmails] = useState<EmailSubscription[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
+  const [emails, setEmails] = useState<any[]>([]);
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
   useEffect(() => {
-    let identityScript: HTMLScriptElement | null = null;
-    let gapiScript: HTMLScriptElement | null = null;
-    let checkInterval: NodeJS.Timeout | null = null;
-    let timeoutId: NodeJS.Timeout | null = null;
-
-    const loadGoogleScripts = async () => {
-      // Load Google Identity Services
-      const loadIdentity = () => {
-        return new Promise<void>((resolve, reject) => {
-          if (document.querySelector('script[src="https://accounts.google.com/gsi/client"]')) {
-            console.log('Google Identity script already loaded');
-            resolve();
-            return;
-          }
-
-          console.log('Loading Google Identity script...');
-          identityScript = document.createElement('script');
-          identityScript.src = 'https://accounts.google.com/gsi/client';
-          identityScript.async = true;
-          identityScript.defer = true;
-          
-          identityScript.onload = () => {
-            console.log('Google Identity script loaded successfully');
-            resolve();
-          };
-          
-          identityScript.onerror = (error) => {
-            console.error('Failed to load Google Identity script:', error);
-            reject(new Error('Failed to load Google Identity script'));
-          };
-
-          document.body.appendChild(identityScript);
-        });
-      };
-
-      // Load Gmail API
-      const loadGapi = () => {
-        return new Promise<void>((resolve, reject) => {
-          if (document.querySelector('script[src="https://apis.google.com/js/api.js"]')) {
-            console.log('Gmail API script already loaded');
-            resolve();
-            return;
-          }
-
-          console.log('Loading Gmail API script...');
-          gapiScript = document.createElement('script');
-          gapiScript.src = 'https://apis.google.com/js/api.js';
-          gapiScript.async = true;
-          gapiScript.defer = true;
-          
-          gapiScript.onload = () => {
-            console.log('Gmail API script loaded successfully');
-            resolve();
-          };
-          
-          gapiScript.onerror = (error) => {
-            console.error('Failed to load Gmail API script:', error);
-            reject(new Error('Failed to load Gmail API script'));
-          };
-
-          document.body.appendChild(gapiScript);
-        });
-      };
-
-      try {
-        await Promise.all([loadIdentity(), loadGapi()]);
-        checkGoogleLoaded();
-      } catch (error) {
-        console.error('Error loading Google scripts:', error);
-        setError('Failed to load Google services');
-      }
-    };
-
-    const checkGoogleLoaded = () => {
-      checkInterval = setInterval(() => {
-        if (window.google?.accounts?.id && window.gapi) {
-          console.log('Google services loaded successfully');
-          cleanup();
-          setIsGoogleLoaded(true);
-          // Initialize Google Identity after services are loaded
-          initializeGoogleIdentity();
+    // Load Google API script
+    const loadGoogleScript = () => {
+      return new Promise<void>((resolve, reject) => {
+        if (document.querySelector('script[src="https://accounts.google.com/gsi/client"]')) {
+          resolve();
+          return;
         }
-      }, 100);
 
-      timeoutId = setTimeout(() => {
-        cleanup();
-        setError('Timeout waiting for Google services to initialize');
-      }, 5000);
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Failed to load Google API script'));
+        document.head.appendChild(script);
+      });
     };
 
-    const cleanup = () => {
-      if (checkInterval) {
-        clearInterval(checkInterval);
-        checkInterval = null;
-      }
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-      }
-    };
-
-    const initializeGoogleIdentity = async () => {
+    const initializeGoogleAuth = async () => {
       try {
-        console.log('Starting Google Identity initialization...');
+        console.log('Starting Google Auth initialization...');
+        await loadGoogleScript();
 
         if (!GOOGLE_CLIENT_ID) {
           throw new Error('Google Client ID is not configured');
         }
 
-        // Double check that Google Identity is loaded
-        if (!window.google?.accounts?.id) {
-          throw new Error('Google Identity not loaded');
-        }
-
-        window.google.accounts.id.initialize({
+        // Initialize OAuth2 token client
+        const tokenClient = window.google.accounts.oauth2.initTokenClient({
           client_id: GOOGLE_CLIENT_ID,
-          callback: handleCredentialResponse,
+          scope: SCOPES,
+          callback: (response) => {
+            if (response.access_token) {
+              console.log('Access token received successfully');
+              setAccessToken(response.access_token);
+              setIsSignedIn(true);
+              fetchEmails(response.access_token);
+            }
+          },
+          error_callback: (error) => {
+            console.error('OAuth2 error:', error);
+            setError(`Authentication error: ${error.message}`);
+          }
         });
 
-        // Wait for the DOM to be ready and render the button
-        const renderButton = () => {
-          const buttonDiv = document.getElementById('google-signin-button');
-          if (buttonDiv && window.google?.accounts?.id) {
-            window.google.accounts.id.renderButton(buttonDiv, {
-              type: 'standard',
-              theme: 'outline',
-              size: 'large',
-              text: 'signin_with',
-              shape: 'rectangular',
-              logo_alignment: 'left',
-              width: 250,
-            });
-            console.log('Google Sign-In button rendered');
-          } else {
-            console.log('Waiting for button container or Google Identity...');
-            // Try again after a short delay
-            setTimeout(renderButton, 100);
-          }
-        };
-
-        // Start the rendering process
-        renderButton();
-        console.log('Google Identity initialized successfully');
+        // Store tokenClient in window for button click handler
+        (window as any).tokenClient = tokenClient;
+        console.log('Google OAuth2 initialized successfully');
       } catch (error) {
-        console.error('Error initializing Google Identity:', error);
-        setError('Failed to initialize Google Identity');
+        console.error('Error initializing Google Auth:', error);
+        setError('Failed to initialize Google Auth');
       }
     };
 
-    loadGoogleScripts();
-
-    // Cleanup function
-    return () => {
-      cleanup();
-      if (identityScript && identityScript.parentNode) {
-        identityScript.parentNode.removeChild(identityScript);
-      }
-      if (gapiScript && gapiScript.parentNode) {
-        gapiScript.parentNode.removeChild(gapiScript);
-      }
-    };
+    initializeGoogleAuth();
   }, []);
 
-  const handleCredentialResponse = async (response: { credential: string }) => {
+  const handleSignIn = () => {
     try {
-      console.log('Received credential response');
-      // Decode the JWT token to get the access token
-      const token = response.credential;
-      setAccessToken(token);
-      setIsSignedIn(true);
-      await fetchEmails();
+      if (!(window as any).tokenClient) {
+        throw new Error('Token client not initialized');
+      }
+      (window as any).tokenClient.requestAccessToken();
     } catch (error) {
-      console.error('Error handling credential response:', error);
+      console.error('Error requesting access token:', error);
       setError('Failed to sign in with Google');
     }
   };
 
-  const fetchEmails = async () => {
-    if (!isSignedIn || !accessToken) return;
-    
-    setLoading(true);
-    setError(null);
+  const fetchEmails = async (token?: string) => {
     try {
-      console.log('Loading Gmail API client...');
-      await new Promise<void>((resolve, reject) => {
-        window.gapi.load('client', async () => {
-          try {
-            console.log('Initializing Gmail API...');
-            await window.gapi.client.init({
-              apiKey: '',
-              clientId: GOOGLE_CLIENT_ID!,
-              discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest'],
-              scope: SCOPES,
-            });
-            console.log('Gmail API initialized successfully');
-            resolve();
-          } catch (error) {
-            console.error('Error initializing Gmail API:', error);
-            reject(error);
-          }
-        });
-      });
+      setIsLoading(true);
+      setError(null);
 
-      console.log('Fetching emails...');
-      const response = await window.gapi.client.gmail.users.messages.list({
-        userId: 'me',
-        q: 'has:user -category:promotions -category:social',
-        maxResults: 50,
-      });
+      const currentToken = token || accessToken;
+      if (!currentToken) {
+        throw new Error('No access token available');
+      }
 
-      const messages = response.result.messages || [];
-      console.log(`Found ${messages.length} messages`);
-
-      const emailPromises = messages.map(async (message: any) => {
-        const email = await window.gapi.client.gmail.users.messages.get({
-          userId: 'me',
-          id: message.id,
-        });
-
-        const headers = email.result.payload.headers;
-        const subject = headers.find((h: any) => h.name === 'Subject')?.value || '';
-        const from = headers.find((h: any) => h.name === 'From')?.value || '';
-        const listUnsubscribe = headers.find((h: any) => h.name === 'List-Unsubscribe')?.value;
-
-        if (listUnsubscribe) {
-          return {
-            id: message.id,
-            from,
-            subject,
-            unsubscribeLink: listUnsubscribe,
-          };
+      console.log('Fetching emails with token:', currentToken.substring(0, 20) + '...');
+      
+      const response = await fetch(
+        'https://gmail.googleapis.com/gmail/v1/users/me/messages?q=has:user -category:promotions -category:social&maxResults=50',
+        {
+          headers: {
+            Authorization: `Bearer ${currentToken}`,
+          },
         }
-        return null;
-      });
+      );
 
-      const results = await Promise.all(emailPromises);
-      const validEmails = results.filter((email): email is EmailSubscription => email !== null);
-      console.log(`Found ${validEmails.length} emails with unsubscribe links`);
-      setEmails(validEmails);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Gmail API error:', errorData);
+        throw new Error(`Failed to fetch emails: ${errorData.error?.message || 'Unknown error'}`);
+      }
+
+      const data = await response.json();
+      console.log('Emails fetched successfully:', data);
+      setEmails(data.messages || []);
     } catch (error) {
       console.error('Error fetching emails:', error);
-      setError('Failed to fetch emails');
+      setError(error instanceof Error ? error.message : 'Failed to fetch emails');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  if (!isGoogleLoaded) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="text-gray-600">Loading Google Sign-In...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8">
-          Mega Unsubscribe
-        </h1>
-        
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
-            {error}
-          </div>
-        )}
-        
-        {!isSignedIn ? (
-          <div className="text-center">
-            <p className="mb-4 text-gray-600">
-              Sign in with your Google account to start cleaning up your inbox
-            </p>
-            <div id="google-signin-button" className="flex justify-center"></div>
-          </div>
-        ) : (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-semibold">
-                Your Email Subscriptions
-              </h2>
-              <div className="space-x-4">
-                <button
-                  onClick={fetchEmails}
-                  disabled={loading}
-                  className="bg-primary hover:bg-secondary text-white font-semibold py-2 px-4 rounded-lg transition-colors disabled:opacity-50"
-                >
-                  {loading ? 'Loading...' : 'Refresh List'}
-                </button>
-                <button
-                  onClick={() => {
-                    setIsSignedIn(false);
-                    setAccessToken(null);
-                    setEmails([]);
-                  }}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition-colors"
-                >
-                  Sign Out
-                </button>
+    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="container mx-auto px-4 py-8">
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-center">Gmail Unsubscribe Tool</CardTitle>
+            <CardDescription className="text-center">
+              Sign in with your Google account to manage your email subscriptions
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm">
+                {error}
               </div>
-            </div>
-
-            {emails.length > 0 ? (
-              <div className="space-y-4">
-                {emails.map((email) => (
-                  <div
-                    key={email.id}
-                    className="bg-white p-4 rounded-lg shadow-sm border border-gray-200"
-                  >
-                    <div className="flex items-start gap-4">
-                      <EnvelopeIcon className="w-6 h-6 text-gray-400 mt-1" />
-                      <div className="flex-1">
-                        <h3 className="font-medium">{email.from}</h3>
-                        <p className="text-gray-600 text-sm mb-2">{email.subject}</p>
-                        <a
-                          href={email.unsubscribeLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:text-secondary text-sm font-medium"
-                        >
-                          Unsubscribe
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+            )}
+            
+            {!isSignedIn ? (
+              <div className="flex flex-col items-center gap-4">
+                <Button
+                  onClick={handleSignIn}
+                  className="w-full max-w-xs flex items-center justify-center gap-2"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Mail className="h-4 w-4" />
+                  )}
+                  Sign in with Google
+                </Button>
               </div>
             ) : (
-              <p className="text-center text-gray-600">
-                {loading
-                  ? 'Searching for emails with unsubscribe links...'
-                  : 'No emails with unsubscribe links found'}
-              </p>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg font-semibold">Your Emails</h2>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setIsSignedIn(false);
+                      setAccessToken(null);
+                      setEmails([]);
+                    }}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </div>
+                
+                {isLoading ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                  </div>
+                ) : emails.length > 0 ? (
+                  <div className="space-y-2">
+                    {emails.map((email) => (
+                      <div
+                        key={email.id}
+                        className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                      >
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          {email.snippet}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-gray-500 dark:text-gray-400">
+                    No emails found
+                  </p>
+                )}
+              </div>
             )}
-          </div>
-        )}
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </main>
   );
 } 
