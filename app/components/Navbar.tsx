@@ -14,7 +14,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <Link href="/" className="text-xl font-bold">
-              mega-unsubscription
+              mega-unsubscribe
             </Link>
             <Link href="/how-it-works" className="text-sm hover:text-primary">
   How it works
