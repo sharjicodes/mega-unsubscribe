@@ -23,7 +23,7 @@ export default function Navbar() {
           </div>
           <div className="flex items-center space-x-4">
             <a
-              href="https://github.com/yourusername/mega-unsubscribe"
+              href="https://github.com/sharjitha/mega-unsubscribe"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm hover:text-primary"
