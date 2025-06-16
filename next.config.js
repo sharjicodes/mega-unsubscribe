@@ -14,7 +14,7 @@ const nextConfig = {
               font-src 'self' https://fonts.gstatic.com;
               img-src 'self' data: https:;
               connect-src 'self' https://gmail.googleapis.com https://oauth2.googleapis.com;
-              frame-src 'self' https://accounts.google.com;
+              frame-src 'self' https://accounts.google.com https://content.googleapis.com https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com;
               object-src 'none';
               media-src 'self';
               form-action 'self';

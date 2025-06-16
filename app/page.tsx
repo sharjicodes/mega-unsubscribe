@@ -482,37 +482,22 @@ export default function Home() {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-3xl mx-auto text-center mb-12">
         <h1 className="text-4xl font-bold mb-6 text-foreground">Mega-Unsubscribe</h1>
-        <div className="space-y-4 text-lg text-muted-foreground">
-          <p className="flex items-center justify-center gap-2">
-            <span className="text-primary">•</span>
-            A privacy-focused tool to clean up your Gmail inbox by unsubscribing from unwanted emails.
-          </p>
-          <p className="flex items-center justify-center gap-2">
-            <span className="text-primary">•</span>
-            Scans only necessary metadata and unsubscribe links — no emails are read, stored, or shared.
-          </p>
-          <p className="flex items-center justify-center gap-2">
-            <span className="text-primary">•</span>
-            Built with Next.js and Google's official OAuth & Gmail API — ensuring secure, user-consented access at all times.
-          </p>
+        <div className="space-y-8 text-lg text-muted-foreground max-w-2xl mx-auto">
+          <div className="flex items-start gap-3">
+            <span className="text-primary text-xl">•</span>
+            <p className="text-left leading-relaxed">A privacy-focused tool to clean up your Gmail inbox by unsubscribing from unwanted emails.</p>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="text-primary text-xl">•</span>
+            <p className="text-left leading-relaxed">Scans only necessary metadata and unsubscribe links — no emails are read, stored, or shared.</p>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="text-primary text-xl">•</span>
+            <p className="text-left leading-relaxed">Built with Next.js and Google's official OAuth & Gmail API — ensuring secure, user-consented access at all times.</p>
+          </div>
         </div>
       </div>
-  
-      {/* Hidden iframe for unsubscribe links */}
-      <div style={{ position: 'absolute', width: '1px', height: '1px', opacity: 0, pointerEvents: 'none' }}>
-        <iframe
-          key={iframeKey}
-          ref={iframeRef}
-          src={isUnsubscribing ? filteredEmails.find(email => email.id === isUnsubscribing)?.unsubscribeLink : 'about:blank'}
-          width="1"
-          height="1"
-          style={{ border: 'none' }}
-          onLoad={() => isUnsubscribing && handleIframeLoad(isUnsubscribing)}
-          onError={() => isUnsubscribing && handleIframeError(isUnsubscribing)}
-          sandbox="allow-same-origin allow-scripts allow-forms"
-        />
-      </div>
-  
+
       <h1 className="text-2xl font-bold mb-4 text-foreground">Get Started</h1>
       <p className="mb-6 text-muted-foreground">
         Easily manage your email subscriptions and unsubscribe from unwanted emails in your Gmail inbox.
@@ -553,7 +538,30 @@ export default function Home() {
               </span>
             </button>
           </div>
-  
+
+          {/* Demo Video Section */}
+          <div className="mt-16 mb-12">
+            <div className="max-w-2xl mx-auto space-y-6">
+              <div className="text-center space-y-4">
+                <p className="text-xl text-muted-foreground">👋 Hey there! Want to see how Mega Unsubscribe works in action?</p>
+                <p className="text-lg text-muted-foreground">🎥 I've got a short demo video for you — just scroll down and hit play!</p>
+                <p className="text-muted-foreground">Let me know if you want help connecting your Gmail or have questions after watching.</p>
+              </div>
+              
+              <div id="demo-video" className="relative w-full max-w-3xl mx-auto pb-[56.25%] h-0">
+                <iframe
+                  src="https://www.youtube-nocookie.com/embed/-18Xq9YfpbY?rel=0&modestbranding=1"
+                  title="How Mega Unsubscribe Works"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute top-0 left-0 w-full h-full rounded-lg shadow-xl"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="space-y-8 pt-8 border-t border-border">
             <div className="space-y-4">
               <h2 className="text-2xl font-bold text-foreground">It's Time to Declutter Your Inbox</h2>

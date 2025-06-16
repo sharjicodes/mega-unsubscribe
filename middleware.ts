@@ -15,7 +15,7 @@ export function middleware(request: NextRequest) {
     'Content-Security-Policy',
     "default-src 'self'; " +
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com https://www.gstatic.com; " +
-    "frame-src 'self' https://accounts.google.com https://content.googleapis.com; " +
+    "frame-src 'self' https://accounts.google.com https://content.googleapis.com https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com; " +
     "connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://gmail.googleapis.com; " +
     "img-src 'self' data: https:; " +
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; " +
