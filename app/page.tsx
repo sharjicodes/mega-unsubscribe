@@ -485,15 +485,15 @@ export default function Home() {
         <div className="space-y-4 text-lg text-muted-foreground">
           <p className="flex items-center justify-center gap-2">
             <span className="text-primary">•</span>
-            A simple, privacy-first tool to clean up your Gmail inbox
+            A privacy-focused tool to clean up your Gmail inbox by unsubscribing from unwanted emails.
           </p>
           <p className="flex items-center justify-center gap-2">
             <span className="text-primary">•</span>
-            Our open-source app finds and unsubscribes you from mailing lists
+            Scans only necessary metadata and unsubscribe links — no emails are read, stored, or shared.
           </p>
           <p className="flex items-center justify-center gap-2">
             <span className="text-primary">•</span>
-            Uses Google's official APIs — safe, secure, and under your control
+            Built with Next.js and Google's official OAuth & Gmail API — ensuring secure, user-consented access at all times.
           </p>
         </div>
       </div>
