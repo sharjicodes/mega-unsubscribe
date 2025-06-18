@@ -33,26 +33,14 @@ export default function PrivacyPolicy() {
             <section>
               <h2 className="text-2xl font-semibold mb-4">What Data We Access</h2>
               <p className="mb-4 text-muted-foreground">
-                We request access to your Gmail account using Google's official APIs. Specifically, we use the following scopes:
+                We request access to your Gmail account using Google's official APIs. Specifically, we use the following scope:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-2 text-muted-foreground">
                 <li>
                   <code className="bg-muted px-2 py-1 rounded text-sm">
                     https://www.googleapis.com/auth/gmail.readonly
                   </code> 
-                  — to identify emails with unsubscribe links
-                </li>
-                <li>
-                  <code className="bg-muted px-2 py-1 rounded text-sm">
-                    https://www.googleapis.com/auth/gmail.modify
-                  </code> 
-                  — to help you mark or move emails (if enabled)
-                </li>
-                <li>
-                  <code className="bg-muted px-2 py-1 rounded text-sm">
-                    https://www.googleapis.com/auth/gmail.send
-                  </code> 
-                  — to send unsubscribe requests on your behalf
+                  — to identify emails with unsubscribe links and read email metadata
                 </li>
               </ul>
             </section>
