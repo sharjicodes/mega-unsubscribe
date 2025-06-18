@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Loader2, Mail, LogOut } from 'lucide-react';
 import Navbar from '../app/components/Navbar';
 import Footer from '../app/components/Footer';
+import Link from 'next/link';
 
 declare global {
   interface Window {
@@ -495,13 +496,25 @@ export default function Home() {
             <span className="text-primary text-xl">•</span>
             <p className="text-left leading-relaxed">Built with Next.js and Google's official OAuth & Gmail API — ensuring secure, user-consented access at all times.</p>
           </div>
+          <div className="mt-6 text-center">
+            <p className="text-muted-foreground">
+              Your privacy is our priority. Read our{' '}
+              <Link href="/privacy" className="text-primary hover:text-primary/80 font-medium underline">
+                Privacy Policy
+              </Link>
+              {' '}to learn how we protect your data.
+            </p>
+          </div>
         </div>
       </div>
 
       <h1 className="text-2xl font-bold mb-4 text-foreground">Get Started</h1>
       <p className="mb-6 text-muted-foreground">
         Easily manage your email subscriptions and unsubscribe from unwanted emails in your Gmail inbox.
-        Our tool helps you identify and remove subscriptions with just a few clicks.
+        Our tool helps you identify and remove subscriptions with just a few clicks. By using our service, you agree to our{' '}
+        <Link href="/privacy" className="text-primary hover:text-primary/80 underline">
+          Privacy Policy
+        </Link>.
       </p>
   
       {error && (
