@@ -32,7 +32,7 @@ const nextConfig = {
         has: [
           {
             type: 'host',
-            value: 'megaunsubscribe.vercel.app',
+            value: 'mega-unsubscribe.vercel.app',
           },
         ],
         destination: 'https://megaunsubscribe.sharjith.com/:path*',
