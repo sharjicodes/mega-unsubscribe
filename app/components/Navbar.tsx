@@ -31,9 +31,14 @@ export default function Navbar() {
             <Link href="/how-it-works" className="text-sm hover:text-primary">
               How it works
             </Link>
-            <Link href="/privacy" className="text-sm hover:text-primary">
+            <a
+              href="https://megaunsubscribe.sharjith.com/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm hover:text-primary"
+            >
               Privacy Policy
-            </Link>
+            </a>
             <a
               href="https://github.com/sharjicodes/mega-unsubscribe"
               target="_blank"
@@ -55,13 +60,15 @@ export default function Navbar() {
             >
               How it works
             </Link>
-            <Link 
-              href="/privacy" 
+            <a
+              href="https://megaunsubscribe.sharjith.com/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
               className="block text-sm hover:text-primary py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Privacy Policy
-            </Link>
+            </a>
             <a
               href="https://github.com/sharjicodes/mega-unsubscribe"
               target="_blank"

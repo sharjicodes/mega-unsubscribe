@@ -1,7 +1,5 @@
 'use client'
 
-import Link from 'next/link'
-
 export default function Footer() {
   return (
     <footer className="border-t py-6 mt-8 md:mt-12">
@@ -9,19 +7,23 @@ export default function Footer() {
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <p className="text-xs md:text-sm text-muted-foreground px-4">© Mega-Unsubscribe – Declutter your Gmail with one click</p>
           <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
-            <Link 
-              href="/privacy" 
+            <a
+              href="https://megaunsubscribe.sharjith.com/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-primary hover:text-primary/80 font-medium text-sm"
             >
               Privacy Policy
-            </Link>
+            </a>
             <span className="hidden md:inline text-muted-foreground">•</span>
-            <Link 
-              href="/terms" 
+            <a
+              href="https://megaunsubscribe.sharjith.com/terms"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-primary hover:text-primary/80 font-medium text-sm"
             >
               Terms of Service
-            </Link>
+            </a>
           </div>
           <p className="text-xs md:text-sm text-muted-foreground">Created by Sharjith A</p>
         </div>
