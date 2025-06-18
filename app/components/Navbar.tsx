@@ -17,9 +17,11 @@ export default function Navbar() {
               mega-unsubscribe
             </Link>
             <Link href="/how-it-works" className="text-sm hover:text-primary">
-  How it works
-</Link>
-
+              How it works
+            </Link>
+            <Link href="/privacy" className="text-sm hover:text-primary">
+              Privacy Policy
+            </Link>
           </div>
           <div className="flex items-center space-x-4">
             <a
@@ -30,7 +32,6 @@ export default function Navbar() {
             >
               <Github className="h-5 w-5" />
             </a>
-            
           </div>
         </div>
       </div>
