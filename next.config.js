@@ -24,6 +24,23 @@ const nextConfig = {
       }
     ];
   },
+
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'megaunsubscribe.vercel.app',
+          },
+        ],
+        destination: 'https://megaunsubscribe.sharjith.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
+
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -33,4 +50,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig; 
+module.exports = nextConfig;
