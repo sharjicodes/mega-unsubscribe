@@ -481,22 +481,22 @@ export default function Home() {
     <>
     <Navbar />
     <div className="container mx-auto px-4 py-8">
-      <div className="max-w-3xl mx-auto text-center mb-12">
-        <h1 className="text-4xl font-bold mb-6 text-foreground">Mega-Unsubscribe</h1>
-        <div className="space-y-8 text-lg text-muted-foreground max-w-2xl mx-auto">
+      <div className="max-w-3xl mx-auto text-center mb-8 md:mb-12">
+        <h1 className="text-3xl md:text-4xl font-bold mb-4 md:mb-6 text-foreground">Mega-Unsubscribe</h1>
+        <div className="space-y-6 md:space-y-8 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
           <div className="flex items-start gap-3">
-            <span className="text-primary text-xl">•</span>
+            <span className="text-primary text-xl flex-shrink-0">•</span>
             <p className="text-left leading-relaxed">A privacy-focused tool to clean up your Gmail inbox by unsubscribing from unwanted emails.</p>
           </div>
           <div className="flex items-start gap-3">
-            <span className="text-primary text-xl">•</span>
+            <span className="text-primary text-xl flex-shrink-0">•</span>
             <p className="text-left leading-relaxed">Scans only necessary metadata and unsubscribe links — no emails are read, stored, or shared.</p>
           </div>
           <div className="flex items-start gap-3">
-            <span className="text-primary text-xl">•</span>
+            <span className="text-primary text-xl flex-shrink-0">•</span>
             <p className="text-left leading-relaxed">Built with Next.js and Google's official OAuth & Gmail API — ensuring secure, user-consented access at all times.</p>
           </div>
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center px-4">
             <p className="text-muted-foreground">
               Your privacy is our priority. Read our{' '}
               <Link href="/privacy" className="text-primary hover:text-primary/80 font-medium underline">
@@ -508,240 +508,241 @@ export default function Home() {
         </div>
       </div>
 
-      <h1 className="text-2xl font-bold mb-4 text-foreground">Get Started</h1>
-      <p className="mb-6 text-muted-foreground">
-        Easily manage your email subscriptions and unsubscribe from unwanted emails in your Gmail inbox.
-        Our tool helps you identify and remove subscriptions with just a few clicks. By using our service, you agree to our{' '}
-        <Link href="/privacy" className="text-primary hover:text-primary/80 underline">
-          Privacy Policy
-        </Link>.
-      </p>
-  
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 dark:bg-red-900 dark:border-red-500 dark:text-red-200">
-          {error}
-        </div>
-      )}
-  
-      {status !== 'authenticated' ? (
-        <div className="space-y-8">
-          <div className="flex flex-col items-center justify-center space-y-4 py-12">
-            <p className="text-foreground text-lg font-medium">Please sign in to access your Gmail account.</p>
-            <button 
-              onClick={handleSignIn}
-              disabled={isLoading}
-              className="gsi-material-button bg-white hover:bg-gray-50 shadow-md hover:shadow-lg transition-all duration-200 rounded-lg border border-gray-200 px-8 py-3 flex items-center gap-3 min-w-[240px]"
-            >
-              <div className="gsi-material-button-icon">
-                <svg 
-                  width="24" 
-                  height="24" 
-                  viewBox="0 0 48 48" 
-                  style={{ display: 'block' }}
-                >
-                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
-                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
-                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
-                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
-                  <path fill="none" d="M0 0h48v48H0z" />
-                </svg>
-              </div>
-              <span className="font-medium text-gray-700">
-                {isLoading ? 'Signing in...' : 'Sign in with Google'}
-              </span>
-            </button>
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-xl md:text-2xl font-bold mb-4 text-foreground">Get Started</h1>
+        <p className="mb-6 text-muted-foreground text-sm md:text-base">
+          Easily manage your email subscriptions and unsubscribe from unwanted emails in your Gmail inbox.
+          Our tool helps you identify and remove subscriptions with just a few clicks. By using our service, you agree to our{' '}
+          <Link href="/privacy" className="text-primary hover:text-primary/80 underline">
+            Privacy Policy
+          </Link>.
+        </p>
+    
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 dark:bg-red-900 dark:border-red-500 dark:text-red-200 text-sm md:text-base">
+            {error}
           </div>
+        )}
+    
+        {status !== 'authenticated' ? (
+          <div className="space-y-6 md:space-y-8">
+            <div className="flex flex-col items-center justify-center space-y-4 py-8 md:py-12">
+              <p className="text-foreground text-base md:text-lg font-medium">Please sign in to access your Gmail account.</p>
+              <button 
+                onClick={handleSignIn}
+                disabled={isLoading}
+                className="gsi-material-button w-full md:w-auto bg-white hover:bg-gray-50 shadow-md hover:shadow-lg transition-all duration-200 rounded-lg border border-gray-200 px-6 md:px-8 py-3 flex items-center justify-center gap-3 min-w-[240px]"
+              >
+                <div className="gsi-material-button-icon">
+                  <svg 
+                    width="24" 
+                    height="24" 
+                    viewBox="0 0 48 48" 
+                    style={{ display: 'block' }}
+                  >
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                    <path fill="none" d="M0 0h48v48H0z" />
+                  </svg>
+                </div>
+                <span className="font-medium text-gray-700 text-sm md:text-base">
+                  {isLoading ? 'Signing in...' : 'Sign in with Google'}
+                </span>
+              </button>
+            </div>
 
-          {/* Demo Video Section */}
-          <div className="mt-16 mb-12">
-            <div className="max-w-2xl mx-auto space-y-6">
-              <div className="text-center space-y-4">
-                <p className="text-xl text-muted-foreground">👋 Hey there! Want to see how Mega Unsubscribe works in action?</p>
-                <p className="text-lg text-muted-foreground">🎥 I've got a short demo video for you — just scroll down and hit play!</p>
-                <p className="text-muted-foreground">Let me know if you want help connecting your Gmail or have questions after watching.</p>
+            {/* Demo Video Section */}
+            <div className="mt-12 md:mt-16 mb-8 md:mb-12">
+              <div className="max-w-2xl mx-auto space-y-6">
+                <div className="text-center space-y-4">
+                  <p className="text-lg md:text-xl text-muted-foreground">👋 Hey there! Want to see how Mega Unsubscribe works in action?</p>
+                  <p className="text-base md:text-lg text-muted-foreground">🎥 I've got a short demo video for you — just scroll down and hit play!</p>
+                  <p className="text-sm md:text-base text-muted-foreground">Let me know if you want help connecting your Gmail or have questions after watching.</p>
+                </div>
+                
+                <div id="demo-video" className="relative w-full max-w-3xl mx-auto pb-[56.25%] h-0">
+                  <iframe
+                    src="https://www.youtube-nocookie.com/embed/-18Xq9YfpbY?rel=0&modestbranding=1"
+                    title="How Mega Unsubscribe Works"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="absolute top-0 left-0 w-full h-full rounded-lg shadow-xl"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                  />
+                </div>
               </div>
-              
-              <div id="demo-video" className="relative w-full max-w-3xl mx-auto pb-[56.25%] h-0">
-                <iframe
-                  src="https://www.youtube-nocookie.com/embed/-18Xq9YfpbY?rel=0&modestbranding=1"
-                  title="How Mega Unsubscribe Works"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="absolute top-0 left-0 w-full h-full rounded-lg shadow-xl"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                />
+            </div>
+
+            <div className="space-y-6 md:space-y-8 pt-6 md:pt-8 border-t border-border">
+              <div className="space-y-4">
+                <h2 className="text-xl md:text-2xl font-bold text-foreground">It's Time to Declutter Your Inbox</h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Gmail is great — until it's buried under newsletters, promotions, and unwanted subscriptions.
+                  Mega-Unsubscribe helps you quickly scan and identify all your active email subscriptions, and lets you unsubscribe from them with powerful batch operations. No need to dig through hundreds of emails — we do the work, you stay in control.
+                </p>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Everything runs securely on your device, and nothing is stored or shared. Your inbox, your rules.
+                </p>
+              </div>
+    
+              <div className="space-y-4">
+                <h2 className="text-xl md:text-2xl font-bold text-foreground">100% Open Source. You Own It.</h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Mega-Unsubscribe is fully open-source and transparent. You can audit the code, host your own version, or even extend it however you like. No tracking, no hidden fees — just a tool built for people who value privacy, simplicity, and inbox sanity.
+                </p>
               </div>
             </div>
           </div>
-
-          <div className="space-y-8 pt-8 border-t border-border">
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-foreground">It's Time to Declutter Your Inbox</h2>
-              <p className="text-muted-foreground">
-                Gmail is great — until it's buried under newsletters, promotions, and unwanted subscriptions.
-                Mega-Unsubscribe helps you quickly scan and identify all your active email subscriptions, and lets you unsubscribe from them with powerful batch operations. No need to dig through hundreds of emails — we do the work, you stay in control.
-              </p>
-              <p className="text-muted-foreground">
-                Everything runs securely on your device, and nothing is stored or shared. Your inbox, your rules.
-              </p>
+        ) : (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p>Signed in as {session.user?.email}</p>
+              <Button
+                onClick={() => signOut()}
+                variant="outline"
+                disabled={isLoading}
+              >
+                Sign Out
+              </Button>
             </div>
-  
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-foreground">100% Open Source. You Own It.</h2>
-              <p className="text-muted-foreground">
-                Mega-Unsubscribe is fully open-source and transparent. You can audit the code, host your own version, or even extend it however you like. No tracking, no hidden fees — just a tool built for people who value privacy, simplicity, and inbox sanity.
-              </p>
-            </div>
-          </div>
-        </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <p>Signed in as {session.user?.email}</p>
-                <Button
-                  onClick={() => signOut()}
-                  variant="outline"
-                  disabled={isLoading}
-                >
-                  Sign Out
-                </Button>
-              </div>
 
-              {isLoading && !emails.length ? (
-                <p>Loading...</p>
-              ) : (
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold">
-                      {showAllEmails ? 'All Senders' : 'Senders with Unsubscribe Links'}
-                    </h2>
-                    <div className="flex items-center gap-2">
-                      {!showAllEmails && (
-                        <>
-                          {selectedEmails.size > 0 ? (
-                            <Button
-                              onClick={handleUnsubscribeSelected}
-                              disabled={isUnsubscribingAll}
-                              variant="default"
-                              size="sm"
-                            >
-                              {isUnsubscribingAll
-                                ? `Unsubscribing... (${unsubscribeProgress.current}/${unsubscribeProgress.total})`
-                                : `Unsubscribe Selected (${selectedEmails.size})`}
-                            </Button>
-                          ) : (
-                            <Button
-                              onClick={handleUnsubscribeAll}
-                              disabled={isUnsubscribingAll}
-                              variant="default"
-                              size="sm"
-                            >
-                              {isUnsubscribingAll
-                                ? `Unsubscribing... (${unsubscribeProgress.current}/${unsubscribeProgress.total})`
-                                : 'Unsubscribe All'}
-                            </Button>
-                          )}
-                          <div className="flex items-center gap-2">
-                            <Button
-                              onClick={selectAllInBatch}
-                              variant="outline"
-                              size="sm"
-                            >
-                              Select All
-                            </Button>
-                            <Button
-                              onClick={deselectAll}
-                              variant="outline"
-                              size="sm"
-                            >
-                              Deselect All
-                            </Button>
-                          </div>
-                        </>
-                      )}
-                      <Button
-                        onClick={() => setShowAllEmails(!showAllEmails)}
-                        variant="outline"
-                        size="sm"
-                      >
-                        {showAllEmails ? 'Show Only Unsubscribe Links' : 'Show All Senders'}
-                      </Button>
-                    </div>
-                  </div>
-                  {filteredEmails.length > 0 ? (
-                    <>
-                      <ul className="space-y-2">
-                        {filteredEmails.map((email) => (
-                          <li key={email.id} className="p-3 border rounded-lg shadow-sm hover:bg-gray-50">
-                            <div className="flex items-center justify-between">
-                              <div className="flex-1">
-                                <div className="font-medium">{email.organizationName}</div>
-                                <div className="text-sm text-gray-500">{email.from}</div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {email.unsubscribeLink ? (
-                                  <div className="flex items-center gap-2">
-                                    {!showAllEmails && (
-                                      <input
-                                        type="checkbox"
-                                        checked={selectedEmails.has(email.id)}
-                                        onChange={() => toggleEmailSelection(email.id)}
-                                        className="h-4 w-4 rounded border-gray-300"
-                                      />
-                                    )}
-                                    <button
-                                      onClick={() => handleUnsubscribe(email.id, email.unsubscribeLink)}
-                                      disabled={isUnsubscribing === email.id}
-                                      className={`text-sm ${
-                                        isUnsubscribing === email.id
-                                          ? 'text-gray-500'
-                                          : unsubscribeStatus[email.id] === 'success'
-                                          ? 'text-green-600'
-                                          : unsubscribeStatus[email.id] === 'error'
-                                          ? 'text-red-600 hover:text-red-800'
-                                          : 'text-blue-600 hover:text-blue-800'
-                                      }`}
-                                    >
-                                      {isUnsubscribing === email.id
-                                        ? 'Unsubscribing...'
-                                        : unsubscribeStatus[email.id] === 'success'
-                                        ? 'Unsubscribed'
-                                        : unsubscribeStatus[email.id] === 'error'
-                                        ? 'Retry'
-                                        : 'Unsubscribe'}
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <div className="text-sm text-gray-500">No unsubscribe link</div>
-                                )}
-                              </div>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                      {hasMore && (
-                        <div className="mt-4 text-center">
+            {isLoading && !emails.length ? (
+              <p>Loading...</p>
+            ) : (
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold">
+                    {showAllEmails ? 'All Senders' : 'Senders with Unsubscribe Links'}
+                  </h2>
+                  <div className="flex items-center gap-2">
+                    {!showAllEmails && (
+                      <>
+                        {selectedEmails.size > 0 ? (
                           <Button
-                            onClick={loadMore}
-                            disabled={isLoading}
-                            variant="outline"
+                            onClick={handleUnsubscribeSelected}
+                            disabled={isUnsubscribingAll}
+                            variant="default"
+                            size="sm"
                           >
-                            {isLoading ? 'Loading...' : 'Load More'}
+                            {isUnsubscribingAll
+                              ? `Unsubscribing... (${unsubscribeProgress.current}/${unsubscribeProgress.total})`
+                              : `Unsubscribe Selected (${selectedEmails.size})`}
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={handleUnsubscribeAll}
+                            disabled={isUnsubscribingAll}
+                            variant="default"
+                            size="sm"
+                          >
+                            {isUnsubscribingAll
+                              ? `Unsubscribing... (${unsubscribeProgress.current}/${unsubscribeProgress.total})`
+                              : 'Unsubscribe All'}
+                          </Button>
+                        )}
+                        <div className="flex items-center gap-2">
+                          <Button
+                            onClick={selectAllInBatch}
+                            variant="outline"
+                            size="sm"
+                          >
+                            Select All
+                          </Button>
+                          <Button
+                            onClick={deselectAll}
+                            variant="outline"
+                            size="sm"
+                          >
+                            Deselect All
                           </Button>
                         </div>
-                      )}
-                    </>
-                  ) : (
-                    <p className="text-center text-gray-500">No emails found</p>
-                  )}
+                      </>
+                    )}
+                    <Button
+                      onClick={() => setShowAllEmails(!showAllEmails)}
+                      variant="outline"
+                      size="sm"
+                    >
+                      {showAllEmails ? 'Show Only Unsubscribe Links' : 'Show All Senders'}
+                    </Button>
+                  </div>
                 </div>
-              )}
-            </div>
-          )}
-        
+                {filteredEmails.length > 0 ? (
+                  <>
+                    <ul className="space-y-2">
+                      {filteredEmails.map((email) => (
+                        <li key={email.id} className="p-3 border rounded-lg shadow-sm hover:bg-gray-50">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="font-medium">{email.organizationName}</div>
+                              <div className="text-sm text-gray-500">{email.from}</div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {email.unsubscribeLink ? (
+                                <div className="flex items-center gap-2">
+                                  {!showAllEmails && (
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedEmails.has(email.id)}
+                                      onChange={() => toggleEmailSelection(email.id)}
+                                      className="h-4 w-4 rounded border-gray-300"
+                                    />
+                                  )}
+                                  <button
+                                    onClick={() => handleUnsubscribe(email.id, email.unsubscribeLink)}
+                                    disabled={isUnsubscribing === email.id}
+                                    className={`text-sm ${
+                                      isUnsubscribing === email.id
+                                        ? 'text-gray-500'
+                                        : unsubscribeStatus[email.id] === 'success'
+                                        ? 'text-green-600'
+                                        : unsubscribeStatus[email.id] === 'error'
+                                        ? 'text-red-600 hover:text-red-800'
+                                        : 'text-blue-600 hover:text-blue-800'
+                                    }`}
+                                  >
+                                    {isUnsubscribing === email.id
+                                      ? 'Unsubscribing...'
+                                      : unsubscribeStatus[email.id] === 'success'
+                                      ? 'Unsubscribed'
+                                      : unsubscribeStatus[email.id] === 'error'
+                                      ? 'Retry'
+                                      : 'Unsubscribe'}
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="text-sm text-gray-500">No unsubscribe link</div>
+                              )}
+                            </div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                    {hasMore && (
+                      <div className="mt-4 text-center">
+                        <Button
+                          onClick={loadMore}
+                          disabled={isLoading}
+                          variant="outline"
+                        >
+                          {isLoading ? 'Loading...' : 'Load More'}
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-center text-gray-500">No emails found</p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <Footer />
+    </div>
     </>
   );
 } 
