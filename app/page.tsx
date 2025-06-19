@@ -499,9 +499,14 @@ export default function Home() {
           <div className="mt-6 text-center px-4">
             <p className="text-muted-foreground">
               Your privacy is our priority. Read our{' '}
-              <Link href="/privacy" className="text-primary hover:text-primary/80 font-medium underline">
+              <a
+                href="https://megaunsubscribe.sharjith.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80 font-medium underline"
+              >
                 Privacy Policy
-              </Link>
+              </a>
               {' '}to learn how we protect your data.
             </p>
           </div>
@@ -513,9 +518,14 @@ export default function Home() {
         <p className="mb-6 text-muted-foreground text-sm md:text-base">
           Easily manage your email subscriptions and unsubscribe from unwanted emails in your Gmail inbox.
           Our tool helps you identify and remove subscriptions with just a few clicks. By using our service, you agree to our{' '}
-          <Link href="/privacy" className="text-primary hover:text-primary/80 underline">
+          <a
+            href="https://megaunsubscribe.sharjith.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:text-primary/80 underline"
+          >
             Privacy Policy
-          </Link>.
+          </a>.
         </p>
     
         {error && (

@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 export default function Footer() {
   return (
     <footer className="border-t py-6 mt-8 md:mt-12">
@@ -16,14 +18,12 @@ export default function Footer() {
               Privacy Policy
             </a>
             <span className="hidden md:inline text-muted-foreground">•</span>
-            <a
-              href="https://megaunsubscribe.sharjith.com/terms"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link 
+              href="/terms" 
               className="text-primary hover:text-primary/80 font-medium text-sm"
             >
               Terms of Service
-            </a>
+            </Link>
           </div>
           <p className="text-xs md:text-sm text-muted-foreground">Created by Sharjith A</p>
         </div>
