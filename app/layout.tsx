@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   description: 'A tool to help you unsubscribe from unwanted emails',
 }
 
+
 export default function RootLayout({
   children,
 }: {
@@ -23,6 +24,16 @@ export default function RootLayout({
             {children}
           </main>
         </Providers>
+        <footer className="w-full flex justify-center py-4 bg-white border-t">
+          <a
+            href="https://megaunsubscribe.sharjith.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm hover:text-primary"
+          >
+            Privacy Policy
+          </a>
+        </footer>
       </body>
     </html>
   )
