@@ -30,6 +30,17 @@ export default function PrivacyPolicy() {
           </div>
 
           <div className="space-y-8 text-foreground">
+            <section className="border border-yellow-300 bg-yellow-50 rounded p-6 mb-8">
+              <h2 className="text-2xl font-semibold mb-4 text-yellow-800">How We Protect Your Sensitive Data</h2>
+              <ul className="list-disc pl-6 space-y-2 text-yellow-900">
+                <li><strong>Data Encryption:</strong> All data transmitted between your browser and Google's servers is encrypted using HTTPS/TLS.</li>
+                <li><strong>No Data Storage:</strong> We do <u>not</u> store, save, or cache the contents of your emails or any sensitive Gmail data on our servers. All processing is done in-memory and only for the duration of your session.</li>
+                <li><strong>Access Controls:</strong> Only you have access to your Gmail data through secure OAuth authentication. Our team and systems do not have access to your Gmail content.</li>
+                <li><strong>No Data Sharing:</strong> We do not share, sell, or disclose your personal or Gmail data to any third parties.</li>
+                <li><strong>Data Deletion:</strong> Since we do not store your data, there is nothing to delete. If you have questions or concerns, you may contact us at <a href="mailto:me@sharjith.com" className="text-primary hover:underline">me@sharjith.com</a>.</li>
+              </ul>
+            </section>
+
             <section>
               <h2 className="text-2xl font-semibold mb-4">What Data We Access</h2>
               <p className="mb-4 text-muted-foreground">
