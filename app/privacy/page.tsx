@@ -54,6 +54,17 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
+              <h2 className="text-2xl font-semibold mb-4">Data Protection and Security</h2>
+              <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                <li><strong>Encryption:</strong> All data transmitted between your browser and Google's servers is encrypted using HTTPS/TLS.</li>
+                <li><strong>No Data Storage:</strong> We do not store your Gmail data or email content on our servers. All processing is performed in-memory and is not retained after your session ends.</li>
+                <li><strong>Access Control:</strong> Access to your Gmail account is strictly limited to the permissions you grant via Google OAuth. We only request the minimum necessary scope (<code>gmail.readonly</code>) to provide our service.</li>
+                <li><strong>Third-Party Services:</strong> We do not share your data with any third parties.</li>
+                <li><strong>User Control:</strong> You can revoke our access to your Gmail account at any time via your Google Account security settings.</li>
+              </ul>
+            </section>
+
+            <section>
               <h2 className="text-2xl font-semibold mb-4">How Your Data Is Protected</h2>
               <p className="text-muted-foreground">
                 Your data stays within your Google account. We do not run any server that stores or accesses your emails. 
