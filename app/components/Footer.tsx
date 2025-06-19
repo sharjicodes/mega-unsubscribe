@@ -9,11 +9,11 @@ export default function Footer() {
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <p className="text-xs md:text-sm text-muted-foreground px-4">© Mega-Unsubscribe – Declutter your Gmail with one click</p>
           <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
-            <a
-              href="https://megaunsubscribe.sharjith.com/privacy"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:text-primary/80 font-medium text-sm"
+            <a 
+              href="https://megaunsubscribe.sharjith.com/privacy" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-sm hover:text-primary"
             >
               Privacy Policy
             </a>

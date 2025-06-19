@@ -31,11 +31,11 @@ export default function Navbar() {
             <Link href="/how-it-works" className="text-sm hover:text-primary">
               How it works
             </Link>
-            <a
-              href="https://megaunsubscribe.sharjith.com/privacy"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:text-primary/80 font-medium text-sm"
+            <a 
+              href="https://megaunsubscribe.sharjith.com/privacy" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-sm hover:text-primary"
             >
               Privacy Policy
             </a>
@@ -64,7 +64,7 @@ export default function Navbar() {
               href="https://megaunsubscribe.sharjith.com/privacy"
               target="_blank"
               rel="noopener noreferrer"
-              className="block text-primary hover:text-primary/80 font-medium text-sm py-2"
+              className="block text-sm hover:text-primary py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Privacy Policy
